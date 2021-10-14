@@ -1,5 +1,5 @@
-import os
 import discord
+import os
 import youtube_dl
 import urllib.request
 import json
@@ -106,7 +106,7 @@ async def play(ctx, url : str):
         if song_there:
             os.remove("song.mp3")
     except PermissionError:
-        await ctx.send("Espera que la canción actual acabe o usa el comando 'Stop'")
+        await ctx.send("Espera a que la cancion actual termine o usa el comando 'stop'")
         return
 
     voiceChannel = discord.utils.get(ctx.guild.voice_channels, name='General')
@@ -116,7 +116,7 @@ async def play(ctx, url : str):
     ydl_opts = {
         'format': 'bestaudio/best',
         'postprocessors': [{
-            'key': 'FFmpefExtractAudio',
+            'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
             'preferredquality': '192',
         }],
@@ -134,7 +134,7 @@ async def leave(ctx):
     if voice.is_connected():
         await voice.disconnect()
     else:
-        await ctx.send("Ni si quiera estoy en el canal de voz para que me corras")
+        await ctx.send("No estoy conectado al canal de voz")
 
 @bot.command()
 async def pause(ctx):
@@ -142,7 +142,7 @@ async def pause(ctx):
     if voice.is_playing():
         voice.pause()
     else:
-        await ctx.send("No hay ningún audio que pueda pausar actualmente")
+        await ctx.send("Actualmente no hay ningun audio reproduciendose")
 
 @bot.command()
 async def resume(ctx):
@@ -150,7 +150,7 @@ async def resume(ctx):
     if voice.is_paused():
         voice.resume()
     else:
-        await ctx.send("El audio no está pausado man")
+        await ctx.send("El audio no esta pausado")
 
 @bot.command()
 async def stop(ctx):
