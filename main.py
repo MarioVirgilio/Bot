@@ -32,7 +32,8 @@ async def on_ready():
     print("Bot is ready")
 
 
-@bot.event  # Filtro de palabras
+# Filtro de palabras
+@bot.event
 async def on_message(msg):
     for word in filtered_words:
         if word in msg.content:
@@ -46,11 +47,17 @@ async def on_message(msg):
                 break
     if "fuck" in msg.content:
         await msg.add_reaction("<:Fuck:765783371167039548>")
-
+    if "zokram" in msg.content:
+        await msg.add_reaction("<:Simp:792898073214582785>")
+    if "axwell" in msg.content:
+        await msg.add_reaction("<:Srave:765407853091356683>")
+    if "yossef" in msg.content:
+        await msg.add_reaction("<:Fuck:765783371167039548>")
     await bot.process_commands(msg)
 
 
-@bot.event  # Mensaje de error
+# Mensaje de error
+@bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingPermissions):
         await ctx.send("No puedes hacer eso")
@@ -61,13 +68,32 @@ async def on_command_error(ctx, error):
     else:
         raise error
 
+#Comandos
+@bot.command(aliases=['commands', 'ayuda'])
+async def comandos(ctx):
+    response = 'Hola mi Nombre es Chad Bot, soy la creación de over, por ahora no puedo hacer muchas cosas pero trato de hacer mi mejor esfuerzo. ' \
+               '\n\nLa lista de comandos son los siguientes: ' \
+               '\nregla			  Leer una regla específica del clan'  \
+               '\nrules/reglas		      Leer todas las reglas del clan'      \
+               '\nc/clean/b/borrar	      Borrar mensajes del chat por número' \
+               '\nk/kick				  Expulsar a usuario (Admin)'          \
+               '\nban/banamex		      Baneas a un usuario (Admin)'         \
+               '\nunb/unban			      Quitar el ban de un usuario (Admin)'
 
-@bot.command(aliases=['rule'])  # Regla específica
+    comando_embed = discord.Embed(title='  ', description=f"  ", color=discord.Color.blue())
+    comando_embed.add_field(name="Comandos | :exclamation:",
+                           value=f"{response}")
+    await ctx.send(embed=comando_embed)
+
+
+# Regla específica
+@bot.command(aliases=['rule'])
 async def regla(ctx, *, number):
     await ctx.send(rules[int(number) - 1])
 
 
-@bot.command(aliases=['rules'])  # Reglas
+# Reglas
+@bot.command(aliases=['rules'])
 async def reglas(ctx):
     response = ":one: Mandar pack obligatorio para entrar en confianza. " \
                "\n:two: Usar NGE en el Nombre tanto en DL como en Discord gei el que no lo use." \
@@ -76,13 +102,15 @@ async def reglas(ctx):
     await ctx.send(response)
 
 
-@bot.command(aliases=['c', 'clean', 'b', 'borra'])  # Borrar mensajes
+# Borrar mensajes
+@bot.command(aliases=['c', 'clean', 'b'])
 @commands.has_permissions(manage_messages=True)
 async def borrar(ctx, amount=2):
     await ctx.channel.purge(limit=amount)
 
 
-@bot.command(aliases=['k', 'kick'])  # Expulsar usuario
+# Expulsar usuario
+@bot.command(aliases=['k', 'kick'])
 @commands.has_permissions(kick_members=True)
 async def expulsar(ctx, member: discord.Member, *, reason="Sin ninguna razón en particular"):
     try:
@@ -93,14 +121,16 @@ async def expulsar(ctx, member: discord.Member, *, reason="Sin ninguna razón en
     await member.kick(reason=reason)
 
 
-@bot.command(aliases=['banamex'])  # Banear usuario
+# Banear usuario
+@bot.command(aliases=['banamex'])
 @commands.has_permissions(ban_members=True)
 async def ban(ctx, member: discord.Member, *, reason="Sin ninguna razón en particular"):
     await member.send(member.name + "Regresa a fornite fan de la CQ te baneamos porque: " + reason)
     await member.ban(reason=reason)
 
 
-@bot.command(aliases=['unb'])  # Quitar ban a usuario
+# Quitar ban a usuario
+@bot.command(aliases=['unb'])
 @commands.has_permissions(ban_members=True)
 async def unban(ctx, *, member):
     banned_users = await ctx.guild.bans()
@@ -116,7 +146,8 @@ async def unban(ctx, *, member):
     await ctx.send(member_name + " no fue encontrado")
 
 
-@bot.command(aliases=['m'])  # Mutear a usuario
+# Mutear a usuario
+@bot.command(aliases=['m'])
 @commands.has_permissions(kick_members=True)
 async def mute(ctx, member: discord.Member):
     muted_role = ctx.guild.get_role(900403284181917726)
@@ -126,7 +157,8 @@ async def mute(ctx, member: discord.Member):
     await ctx.send(member.mention + " ha sido muteado")
 
 
-@bot.command(name='umute', aliases=['unm'])  # Desmutear usuario
+# Desmutear usuario
+@bot.command(name='umute', aliases=['unm'])
 @commands.has_permissions(kick_members=True)
 async def unmute(ctx, member: discord.Member):
     muted_role = ctx.guild.get_role(900403284181917726)
