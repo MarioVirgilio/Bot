@@ -16,7 +16,13 @@ bot = commands.Bot(command_prefix=PREFIX)
 f = open("rules.txt", "r")
 rules = f.readlines()
 
-filtered_words = ["zero", "Laxus", "PKM"]
+filtered_words = ["zero",
+                  "Zero",
+                  "Laxus",
+                  "PKM",
+                  "pkm",
+                  "U7",
+                  "u7"]
 
 cartas = [
     'https://static.wikia.nocookie.net/yugiohenespanol/images/d/dd/Foto_n%C3%BAmero_39_utop%C3%ADa.jpg/revision/latest?cb=20120122053915&path-prefix=es',
@@ -27,7 +33,8 @@ cartas = [
 ]
 
 
-@bot.event  # Inicio
+# Inicio
+@bot.event
 async def on_ready():
     print("Bot is ready")
 
@@ -38,13 +45,13 @@ async def on_message(msg):
     for word in filtered_words:
         if word in msg.content:
             await msg.delete()
-    if ":" == msg.content[0] and ":" == msg.content[-1]:
-        emoji_name = msg.content[1:-1]
-        for emoji in msg.guild.emojis:
-            if emoji_name == emoji.name:
-                await msg.channel.send(str(emoji))
-                await msg.delete()
-                break
+            if ":" == msg.content[0] and ":" == msg.content[-1]:
+                emoji_name = msg.content[1:-1]
+                for emoji in msg.guild.emojis:
+                    if emoji_name == emoji.name:
+                        await msg.channel.send(str(emoji))
+                        await msg.delete()
+                        break
     if "fuck" in msg.content:
         await msg.add_reaction("<:Fuck:765783371167039548>")
     if "zokram" in msg.content:
@@ -68,23 +75,88 @@ async def on_command_error(ctx, error):
     else:
         raise error
 
-#Comandos
-@bot.command(aliases=['commands', 'ayuda'])
+
+# Categorías
+@bot.command(aliases=['commands', 'ayuda', 'Ayuda'])
 async def comandos(ctx):
-    response = 'Hola mi Nombre es Chad Bot, soy la creación de over, por ahora no puedo hacer muchas cosas pero trato de hacer mi mejor esfuerzo. ' \
-               '\n\nLa lista de comandos son los siguientes: ' \
-               '\nregla			  Leer una regla específica del clan'  \
-               '\nrules/reglas		      Leer todas las reglas del clan'      \
-               '\nc/clean/b/borrar	      Borrar mensajes del chat por número' \
-               '\nk/kick				  Expulsar a usuario (Admin)'          \
-               '\nban/banamex		      Baneas a un usuario (Admin)'         \
-               '\nunb/unban			      Quitar el ban de un usuario (Admin)'
+    response = 'Hola mi Nombre es Chad Bot, soy la creación de over, hasta ahora estos son las categorías de funciones que tengo: ' \
+               '\n\n:red_circle:Comandos de Admin:-------------"!admin" para ver mas info.' \
+               '\n:red_circle:Comandos de Calculadora:-------"!calculadora" para ver mas info.' \
+               '\n:red_circle:Comandos Generales:------------"!generales" para ver mas info.' \
+               '\n:red_circle:Comandos Memes:---------------"!memes" para ver mas info.'
 
-    comando_embed = discord.Embed(title='  ', description=f"  ", color=discord.Color.blue())
-    comando_embed.add_field(name="Comandos | :exclamation:",
-                           value=f"{response}")
-    await ctx.send(embed=comando_embed)
+    categorias_embed = discord.Embed(title='  ', description=f"  ", color=discord.Color.blue())
+    categorias_embed.add_field(name="Categorías | :exclamation:", value=f"{response}")
+    await ctx.send(embed=categorias_embed)
 
+
+# Administrador
+@bot.command(aliases=['Admin'])
+async def admin(ctx):
+    response = 'Estos son los comandos para administardores: ' \
+               '\n\n:x:Expulsar usuario:--------"!kick".' \
+               '\n:x:Banear usuario:----------"!ban".' \
+               '\n:x:Desbanear usuario:-----"!unban".' \
+               '\n:x:Mutear usuario:---------"!mute".' \
+               '\n:x:Desmutear usuario:-----"!unmute".'\
+               '\n:x:Borrar mensajes:--------"!c".'
+
+    admin_embed = discord.Embed(title='  ', description=f"  ", color=discord.Color.red())
+    admin_embed.add_field(name="Admin | :exclamation:", value=f"{response}")
+    await ctx.send(embed=admin_embed)
+
+
+# General
+@bot.command(aliases=['General'])
+async def general(ctx):
+    response = 'Estos son los comandos generales: ' \
+               '\n\n:small_orange_diamond:Categorías de comandos:-----"!ayuda".' \
+               '\n:small_orange_diamond:Buscar Regla:-------------------"!regla".' \
+               '\n:small_orange_diamond:Leer Reglas:--------------------"!reglas".' \
+               '\n:small_orange_diamond:Ver Avatar:---------------------"!avatar".'\
+               '\n:small_orange_diamond:Elección al Azar:---------------"!azar".'\
+               '\n:small_orange_diamond:Tiro de Moneda:---------------"!moneda".'\
+               '\n:small_orange_diamond:Tiro de Dado:------------------"!dado6".'\
+               '\n:small_orange_diamond:Doble Dado:-------------------"!2dado6".'\
+               '\n:small_orange_diamond:Calificar algo:------------------"!rate".'\
+               '\n:small_orange_diamond:Información de usuario:-------"!info".'
+
+    general_embed = discord.Embed(title='  ', description=f"  ", color=discord.Color.dark_gold())
+    general_embed.add_field(name="General | :exclamation:", value=f"{response}")
+    await ctx.send(embed=general_embed)
+
+
+# Calculadora
+@bot.command(aliases=['Calculadora', 'calculadora'])
+async def mate(ctx):
+    response = 'Estos son los comandos matemáticos: ' \
+               '\n\n:green_circle: Sumar:------------------"!S".' \
+               '\n:green_circle: Restar:------------------"!R".' \
+               '\n:green_circle: Multiplicar-------------"!X".' \
+               '\n:green_circle: Exponencial:-----------"!E".'\
+               '\n:green_circle: Cuadrado:--------------"!E2".'\
+               '\n:green_circle: Cubo:-------------------"!E3".'\
+               '\n:green_circle: Dividir:-----------------"!D".'
+
+    categorias_embed = discord.Embed(title='  ', description=f"  ", color=discord.Color.green())
+    categorias_embed.add_field(name="Calculadora | :exclamation:", value=f"{response}")
+    await ctx.send(embed=categorias_embed)
+
+# Memes
+@bot.command(aliases=['Memes'])
+async def meme(ctx):
+    response = 'Estos son los comandos matemáticos: ' \
+               '\n\n:green_circle: Sumar:------------------"!S".' \
+               '\n:green_circle: Restar:------------------"!R".' \
+               '\n:green_circle: Multiplicar-------------"!X".' \
+               '\n:green_circle: Exponencial:-----------"!E".'\
+               '\n:green_circle: Cuadrado:--------------"!E2".'\
+               '\n:green_circle: Cubo:-------------------"!E3".'\
+               '\n:green_circle: Dividir:-----------------"!D".'
+
+    memes_embed = discord.Embed(title='  ', description=f"  ", color=discord.Color.green())
+    memes_embed.add_field(name="Calculadora | :exclamation:", value=f"{response}")
+    await ctx.send(embed=memes_embed)
 
 # Regla específica
 @bot.command(aliases=['rule'])
@@ -104,7 +176,7 @@ async def reglas(ctx):
 
 # Borrar mensajes
 @bot.command(aliases=['c', 'clean', 'b'])
-@commands.has_permissions(manage_messages=True)
+@commands.has_permissions(kick_members=True)
 async def borrar(ctx, amount=2):
     await ctx.channel.purge(limit=amount)
 
@@ -158,45 +230,41 @@ async def mute(ctx, member: discord.Member):
 
 
 # Desmutear usuario
-@bot.command(name='umute', aliases=['unm'])
+@bot.command(name='unmute', aliases=['unm'])
 @commands.has_permissions(kick_members=True)
 async def unmute(ctx, member: discord.Member):
     muted_role = ctx.guild.get_role(900403284181917726)
 
-    await member.remove_roles()
+    await member.remove_roles(muted_role)
 
     await ctx.send(member.mention + " ha sido desmuteado")
 
 
-@bot.command()  # Avatar de perfil
+# Avatar de perfil
+@bot.command()
 async def avatar(ctx):
-    # Obtenemos los argumentos del mensaje que serán usados posteriormente
+
     args = ctx.message.content.split(" ")[1:]
 
-    # Preparamos el embed que mostrara la imagen
     embed = discord.Embed()
     embed.colour = discord.Color.from_rgb(0, 255, 255)
 
-    # Avatar propio, cuando no hay ningún argumento
     if len(args) == 0:
         embed.title = ctx.author.name
         embed.set_image(url=ctx.author.avatar_url)
         await ctx.send(embed=embed)
 
-    # Avatar de los mencionados, cuando se detecten menciones en el mensaje
     elif len(ctx.message.mentions) > 0:
         for member in ctx.message.mentions:
             embed.title = member.name
             embed.set_image(url=member.avatar_url)
             await ctx.send(embed=embed)
 
-    # Avatar del server, cuando el primer argumento sea 'server' o 'guild'
     elif args[0] in ("server", "guild"):
         embed.title = ctx.guild.name
         embed.set_image(url=ctx.guild.icon_url)
         await ctx.send(embed=embed)
 
-    # En caso de dar un argumento incorrecto el bot mostrara su correcto uso
     else:
         embed.title = "avatar"
         embed.description = f"Muestra tu avatar, de los usuarios mencionados o del servidor."
@@ -205,7 +273,8 @@ async def avatar(ctx):
         await ctx.send(embed=embed)
 
 
-@bot.command(aliases=['azar'])  # Azar
+# Azar
+@bot.command(aliases=['azar'])
 async def bola8(ctx, *, question):
     response = ['En mi opinión, sí',
                 'Es cierto',
@@ -234,7 +303,8 @@ async def bola8(ctx, *, question):
     await ctx.send(embed=_8ball_embed)
 
 
-@bot.command(aliases=['toss'])  # Moneda
+# Moneda
+@bot.command(aliases=['toss'])
 async def moneda(ctx):
     response = ['Cara',
                 'Cruz']
@@ -244,7 +314,8 @@ async def moneda(ctx):
     await ctx.send(embed=moneda_embed)
 
 
-@bot.command(aliases=['roll6'])  # Dado
+# Dado
+@bot.command(aliases=['roll6'])
 async def dado6(ctx):
     response = [':one:',
                 ':two:',
@@ -257,12 +328,12 @@ async def dado6(ctx):
     await ctx.send(embed=dado_embed)
 
 
-@bot.command(aliases=['2roll6', '2dado6'])  # Dado
+# Dos dados de seis caras
+@bot.command(aliases=['2roll6', '2dado6'])
 async def dado(ctx):
     response = [':one:-:one:', ':one:-:two:', ':one:-:three:', ':one:-:four:', ':one:-:five:', ':one:-:six:',
                 ':two:-:one:', ':two:-:two:', ':two:-:three:', ':two:-:four:', ':two:-:five:', ':two:-:six:',
-                ':three:-:one:', ':three:-:two:', ':three:-:three:', ':three:-:four:', ':three:-:five:',
-                ':three:-:six:',
+                ':three:-:one:', ':three:-:two:', ':three:-:three:', ':three:-:four:', ':three:-:five:', ':three:-:six:',
                 ':four:-:one:', ':four:-:two:', ':four:-:three:', ':four:-:four:', ':four:-:five:', ':four:-:six:',
                 ':five:-:one:', ':five:-:two:', ':five:-:three:', ':five:-:four:', ':five:-:five:', ':five:-:six:',
                 ':six:-:one:', ':six:-:two:', ':six:-:three:', ':six:-:four:', ':six:-:five:', ':six:-:six:']
@@ -271,8 +342,9 @@ async def dado(ctx):
     await ctx.send(embed=dado_embed)
 
 
-@bot.command(aliases=['rate'])  # Rate/Calificar
-async def _rate_embed(ctx, *, question):
+# Rate/Calificar
+@bot.command(aliases=['rate'])
+async def calificar(ctx, *, question):
     response = ['0/10',
                 '1/10',
                 '2/10',
@@ -291,7 +363,8 @@ async def _rate_embed(ctx, *, question):
     await ctx.send(embed=rate_embed)
 
 
-@bot.command(name='golpe', aliases=['punch'])  # Golpe
+# Golpe
+@bot.command(name='golpe', aliases=['punch'])
 async def golpe(ctx, *, member: discord.Member):
     listGifs = ['https://c.tenor.com/DMWqIb2Rdp4AAAAi/bonk-cheems.gif',
                 'https://c.tenor.com/cqnZ1RW_XjsAAAAC/horny-bonk.gif',
@@ -307,7 +380,8 @@ async def golpe(ctx, *, member: discord.Member):
     await ctx.send(embed=punch_embed)
 
 
-@bot.command(name='apreton', aliases=['handshake'])  # Apreton
+# Apreton
+@bot.command(name='apreton', aliases=['handshake'])
 async def apreton(ctx, *, member: discord.Member):
     listGifs = ['https://c.tenor.com/9t3luBDOyHEAAAAC/the-simpsons-simpson.gif',
                 'https://c.tenor.com/qcYlFf9IyQ8AAAAC/dap-handshake.gif',
@@ -328,8 +402,8 @@ async def apreton(ctx, *, member: discord.Member):
     await ctx.send(embed=hand_embed)
 
 
+# Información de usuario
 @bot.command(aliases=['user', 'info'])
-# @commands.has_permissions(kick_members=True)
 async def avers(ctx, member: discord.Member):
     embed = discord.Embed(title=member.name, description=member.mention, color=discord.Color.green())
     embed.add_field(name="ID", value=member.id, inline=True)
@@ -338,6 +412,7 @@ async def avers(ctx, member: discord.Member):
     await ctx.send(embed=embed)
 
 
+# Carta al azar
 @bot.command()
 async def carta(ctx):
     embed = discord.Embed(color=discord.Color.red())
@@ -346,39 +421,97 @@ async def carta(ctx):
     await ctx.send(embed=embed)
 
 
-@bot.command(name='mlp')
+@bot.command(name='mlp', aliases=['MLP'])
 async def mlp(ctx):
     response = "@AxwellG NGE#4759 está bien pendejo :100:"
     await ctx.send(response)
 
 
-@bot.command(name='Zokram')
+@bot.command(name='Zokram', aliases=['zokram'])
 async def zokram(ctx):
     response = "Vamos Zokram habla como loli"
     await ctx.send(response)
 
 
-@bot.command(name='Skmlla')
+@bot.command(name='Skmlla', aliases=['skmlla'])
 async def skmlla(ctx):
     response = "Camara Saquen el WildRift"
     await ctx.send(response)
 
 
-@bot.command(name='Yossef')
+@bot.command(name='Yossef', aliases=['yossef'])
 async def yossef(ctx):
     response = "Callese viejo ridiculo"
     await ctx.send(response)
 
 
-@bot.command(name='Over')
+@bot.command(name='Over', aliases=['over'])
 async def over(ctx):
-    response = "Te quiero papi"
+    response = "Te quiero papi <:mmmm:765440193217822742>"
     await ctx.send(response)
 
 
-@bot.command(name='ctm')
+@bot.command(name='ctm', aliases=['CTM'])
 async def ctm(ctx):
     await ctx.send("ctm mamón <:Fuck:765783371167039548>")
+
+
+#Suma
+@bot.command(aliases=['S', 's', 'Sumar'])
+async def sumar(ctx, var1,var2):
+    response = int(var1)+int(var2)
+    statement = ("La suma de "+str(var1)+"+"+str(var2)+" es igual a: "+"{:,d}".format(int(response)))
+    await ctx.send(statement)
+
+
+#Resta
+@bot.command(aliases=['R', 'r', 'Restar'])
+async def restar(ctx, var1,var2):
+    response = int(var1)-int(var2)
+    statement = ("La resta de " + str(var1) + "-" + str(var2) + " es igual a: "+"{:,d}".format(int(response)))
+    await ctx.send(statement)
+
+
+#Multiplicar
+@bot.command(aliases=['X', 'x', 'Multiplicar'])
+async def multiplicar(ctx, var1,var2):
+    response = int(var1)*int(var2)
+    statement = ("La multiplicacion de " + str(var1) + "*" + str(var2) + " es igual a: "+"{:,d}".format(int(response)))
+    await ctx.send(statement)
+
+
+#Exponencial
+@bot.command(aliases=['E', 'e', 'exponencial', 'Exponencial', 'Exp'])
+async def exp(ctx, var1,var2):
+    response = int(var1)**int(var2)
+    statement = ("El numero " + str(var1) + "^" + str(var2) + " es igual a: "+"{:,d}".format(int(response)))
+    await ctx.send(statement)
+
+
+#Cuadrado
+@bot.command(aliases=['e2', 'E2'])
+async def cuadrado(ctx, var1):
+    response = int(var1) ** int(2)
+    statement = ("El numero " + str(var1) + " al cuadrado es igual a: "+"{:,d}".format(int(response)))
+    await ctx.send(statement)
+
+
+#Cubo
+@bot.command(aliases=['e3', 'E3'])
+async def cubo(ctx, var1):
+    response = int(var1) ** int(3)
+    statement = ("El numero " + str(var1) + " al cubo es igual a: "+"{:,d}".format(int(response)))
+    await ctx.send(statement)
+
+
+#Dividir
+@bot.command(aliases=['D', 'd', 'Division'])
+async def division(ctx, var1,var2):
+    div = int(var1)/int(var2)
+    rest = int(var1)%int(var2)
+    statement = ("La división de " + str(var1) + "/" + str(var2) + " es igual a: "+"{:.2f}".format(int(div))+"\nY tiene un residuo de: "+ "{:.2f}".format(int(rest)))
+    await ctx.send(statement)
+
 
 
 bot.run(TOKEN)
