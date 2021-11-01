@@ -1,28 +1,21 @@
 import discord
 import os
 import random
-import urllib.request
-import json
-from random import choice
-from discord.ext import commands
+from discord.ext import commands, tasks
+from itertools import cycle
 from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 PREFIX = '!'
+status = cycle(['With ur mom', 'Gay el que lo lea', 'Sus', 'DB super es para pendejos'])
 
 bot = commands.Bot(command_prefix=PREFIX)
 
 f = open("rules.txt", "r")
 rules = f.readlines()
 
-filtered_words = ["zero",
-                  "Zero",
-                  "Laxus",
-                  "PKM",
-                  "pkm",
-                  "U7",
-                  "u7"]
+filtered_words = ["Laxus", "laxus", "PKM","pkm"]
 
 cartas = [
     'https://static.wikia.nocookie.net/yugiohenespanol/images/d/dd/Foto_n%C3%BAmero_39_utop%C3%ADa.jpg/revision/latest?cb=20120122053915&path-prefix=es',
@@ -36,7 +29,13 @@ cartas = [
 # Inicio
 @bot.event
 async def on_ready():
-    print("Bot is ready")
+  change_status.start()
+  print("Bot is ready")
+
+
+@tasks.loop(minutes=3)
+async def change_status():
+  await bot.change_presence(activity=discord.Game(next(status)))
 
 
 # Filtro de palabras
@@ -143,18 +142,20 @@ async def mate(ctx):
     await ctx.send(embed=categorias_embed)
 
 # Memes
-@bot.command(aliases=['Memes'])
+@bot.command(aliases=['Memes', 'memes', 'Meme'])
 async def meme(ctx):
     response = 'Estos son los comandos matemáticos: ' \
-               '\n\n:green_circle: Sumar:------------------"!S".' \
-               '\n:green_circle: Restar:------------------"!R".' \
-               '\n:green_circle: Multiplicar-------------"!X".' \
-               '\n:green_circle: Exponencial:-----------"!E".'\
-               '\n:green_circle: Cuadrado:--------------"!E2".'\
-               '\n:green_circle: Cubo:-------------------"!E3".'\
-               '\n:green_circle: Dividir:-----------------"!D".'
+               '\n\n:black_square_button: Golpe:------------------"!golpe".' \
+               '\n:black_square_button: Apreton:---------------"!apreton".' \
+               '\n:black_square_button: Carta-------------------"!carta".' \
+               '\n:black_square_button: Mlp:--------------------"!mlp".'\
+               '\n:black_square_button: Simp:-------------------"!zokram".'\
+               '\n:black_square_button: Wild Rift:--------------"!skmlla".'\
+               '\n:black_square_button: Franz:------------------"!yossef".'\
+               '\n:black_square_button: Yo:---------------------"!over".'\
+               '\n:black_square_button: CTM:------------------"!ctm".'\
 
-    memes_embed = discord.Embed(title='  ', description=f"  ", color=discord.Color.green())
+    memes_embed = discord.Embed(title='  ', description=f"  ", color=discord.Color.blurple())
     memes_embed.add_field(name="Calculadora | :exclamation:", value=f"{response}")
     await ctx.send(embed=memes_embed)
 
@@ -241,7 +242,7 @@ async def unmute(ctx, member: discord.Member):
 
 
 # Avatar de perfil
-@bot.command()
+@bot.command(aliases=['perfil'])
 async def avatar(ctx):
 
     args = ctx.message.content.split(" ")[1:]
@@ -413,7 +414,7 @@ async def avers(ctx, member: discord.Member):
 
 
 # Carta al azar
-@bot.command()
+@bot.command(aliases=['card','Card', 'Carta'])
 async def carta(ctx):
     embed = discord.Embed(color=discord.Color.red())
     random_link = random.choice(cartas)
@@ -445,7 +446,7 @@ async def yossef(ctx):
     await ctx.send(response)
 
 
-@bot.command(name='Over', aliases=['over'])
+@bot.command(aliases=['Over'])
 async def over(ctx):
     response = "Te quiero papi <:mmmm:765440193217822742>"
     await ctx.send(response)
@@ -456,7 +457,7 @@ async def ctm(ctx):
     await ctx.send("ctm mamón <:Fuck:765783371167039548>")
 
 
-#Suma
+# Suma
 @bot.command(aliases=['S', 's', 'Sumar'])
 async def sumar(ctx, var1,var2):
     response = int(var1)+int(var2)
@@ -464,7 +465,7 @@ async def sumar(ctx, var1,var2):
     await ctx.send(statement)
 
 
-#Resta
+# Resta
 @bot.command(aliases=['R', 'r', 'Restar'])
 async def restar(ctx, var1,var2):
     response = int(var1)-int(var2)
@@ -472,7 +473,7 @@ async def restar(ctx, var1,var2):
     await ctx.send(statement)
 
 
-#Multiplicar
+# Multiplicar
 @bot.command(aliases=['X', 'x', 'Multiplicar'])
 async def multiplicar(ctx, var1,var2):
     response = int(var1)*int(var2)
@@ -480,7 +481,7 @@ async def multiplicar(ctx, var1,var2):
     await ctx.send(statement)
 
 
-#Exponencial
+# Exponencial
 @bot.command(aliases=['E', 'e', 'exponencial', 'Exponencial', 'Exp'])
 async def exp(ctx, var1,var2):
     response = int(var1)**int(var2)
@@ -488,7 +489,7 @@ async def exp(ctx, var1,var2):
     await ctx.send(statement)
 
 
-#Cuadrado
+# Cuadrado
 @bot.command(aliases=['e2', 'E2'])
 async def cuadrado(ctx, var1):
     response = int(var1) ** int(2)
@@ -496,7 +497,7 @@ async def cuadrado(ctx, var1):
     await ctx.send(statement)
 
 
-#Cubo
+# Cubo
 @bot.command(aliases=['e3', 'E3'])
 async def cubo(ctx, var1):
     response = int(var1) ** int(3)
@@ -504,14 +505,13 @@ async def cubo(ctx, var1):
     await ctx.send(statement)
 
 
-#Dividir
+# Dividir
 @bot.command(aliases=['D', 'd', 'Division'])
 async def division(ctx, var1,var2):
     div = int(var1)/int(var2)
     rest = int(var1)%int(var2)
     statement = ("La división de " + str(var1) + "/" + str(var2) + " es igual a: "+"{:.2f}".format(int(div))+"\nY tiene un residuo de: "+ "{:.2f}".format(int(rest)))
     await ctx.send(statement)
-
 
 
 bot.run(TOKEN)
