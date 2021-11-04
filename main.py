@@ -2,6 +2,7 @@ import discord
 import os
 import random
 import json
+import asyncio
 from discord.ext import commands, tasks
 from itertools import cycle
 from dotenv import load_dotenv
@@ -42,6 +43,7 @@ async def on_ready():
     print("Bot is ready")
 
 
+# Agregar ID al unirse a discord
 @bot.event
 async def on_guild_join(guild):
     with open('prefixes.json', 'r') as f:
@@ -53,6 +55,7 @@ async def on_guild_join(guild):
         json.dump(prefixes, f, indent=4)
 
 
+# Borrar ID de canal al salirse
 @bot.event
 async def on_guild_remove(guild):
     with open('prefixes.json', 'r') as f:
@@ -127,6 +130,7 @@ async def borrar(ctx, amount: int):
     await ctx.channel.purge(limit=amount)
 
 
+# Mensaje de error para borrar
 @bot.event
 async def clear_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
@@ -142,11 +146,8 @@ async def comandos(ctx):
                '\n:red_circle:Comandos Generales:------------"!generales" para ver mas info.' \
                '\n:red_circle:Comandos Memes:---------------"!memes" para ver mas info.'
 
-    categorias_embed = discord.Embed(title='  ',
-                                     description=f"  ",
-                                     color=discord.Color.blue())
-    categorias_embed.add_field(name="Categorías | :exclamation:",
-                               value=f"{response}")
+    categorias_embed = discord.Embed(title='  ', description=f"  ", color=discord.Color.blue())
+    categorias_embed.add_field(name="Categorías | :exclamation:", value=f"{response}")
     await ctx.send(embed=categorias_embed)
 
 
@@ -161,9 +162,7 @@ async def admin(ctx):
                '\n:x:Desmutear usuario:-----"!unmute".' \
                '\n:x:Borrar mensajes:--------"!c".'
 
-    admin_embed = discord.Embed(title='  ',
-                                description=f"  ",
-                                color=discord.Color.red())
+    admin_embed = discord.Embed(title='  ', description=f"  ", color=discord.Color.red())
     admin_embed.add_field(name="Admin | :exclamation:", value=f"{response}")
     await ctx.send(embed=admin_embed)
 
@@ -183,11 +182,8 @@ async def general(ctx):
                '\n:small_orange_diamond:Calificar algo:------------------"!rate".' \
                '\n:small_orange_diamond:Información de usuario:-------"!info".'
 
-    general_embed = discord.Embed(title='  ',
-                                  description=f"  ",
-                                  color=discord.Color.dark_gold())
-    general_embed.add_field(name="General | :exclamation:",
-                            value=f"{response}")
+    general_embed = discord.Embed(title='  ', description=f"  ", color=discord.Color.dark_gold())
+    general_embed.add_field(name="General | :exclamation:", value=f"{response}")
     await ctx.send(embed=general_embed)
 
 
@@ -203,11 +199,8 @@ async def mate(ctx):
                '\n:green_circle: Cubo:-------------------"!E3".' \
                '\n:green_circle: Dividir:-----------------"!D".'
 
-    categorias_embed = discord.Embed(title='  ',
-                                     description=f"  ",
-                                     color=discord.Color.green())
-    categorias_embed.add_field(name="Calculadora | :exclamation:",
-                               value=f"{response}")
+    categorias_embed = discord.Embed(title='  ', description=f"  ", color=discord.Color.green())
+    categorias_embed.add_field(name="Calculadora | :exclamation:", value=f"{response}")
     await ctx.send(embed=categorias_embed)
 
 
@@ -223,13 +216,10 @@ async def meme(ctx):
                '\n:black_square_button: Wild Rift:--------------"!skmlla".' \
                '\n:black_square_button: Franz:------------------"!yossef".' \
                '\n:black_square_button: Yo:---------------------"!over".' \
-               '\n:black_square_button: CTM:------------------"!ctm".' \
+               '\n:black_square_button: CTM:------------------"!ctm".'
 
-    memes_embed = discord.Embed(title='  ',
-                                description=f"  ",
-                                color=discord.Color.blurple())
-    memes_embed.add_field(name="Calculadora | :exclamation:",
-                          value=f"{response}")
+    memes_embed = discord.Embed(title='  ', description=f"  ", color=discord.Color.blurple())
+    memes_embed.add_field(name="Calculadora | :exclamation:", value=f"{response}")
     await ctx.send(embed=memes_embed)
 
 
@@ -252,10 +242,7 @@ async def reglas(ctx):
 # Expulsar usuario
 @bot.command(aliases=['k', 'kick'])
 @commands.has_permissions(kick_members=True)
-async def expulsar(ctx,
-                   member: discord.Member,
-                   *,
-                   reason="Sin ninguna razón en particular"):
+async def expulsar(ctx, member: discord.Member, *, reason="Sin ninguna razón en particular"):
     try:
         await member.send(
             "Regresa a fornite fan de la CQ te kickeamos porque: " + reason)
@@ -265,16 +252,34 @@ async def expulsar(ctx,
     await member.kick(reason=reason)
 
 
+# Ban temporal
+class DurationConverter(commands.Converter):
+    async def convert(self, ctx, argument):
+        amount = argument[:-1]
+        unit = argument[-1]
+
+        if amount.isdigit() and unit in ['s', 'm']:
+            return int(amount), unit
+
+        raise commands.BadArgument(message='Duracion no valida')
+
+
+@bot.command(aliases=['banTemp'])
+async def tempban(ctx, member: commands.MemberConverter, duration: DurationConverter):
+    multiplier = {'s': 1, 'm': 60}
+    amount, unit = duration
+
+    await ctx.guild.ban(member)
+    await ctx.send(f'{member} has sido baneado temporalmente por {amount}{unit}.')
+    await asyncio.sleep(amount * multiplier[unit])
+    await ctx.guild.unban(member)
+
+
 # Banear usuario
 @bot.command(aliases=['banamex'])
 @commands.has_permissions(ban_members=True)
-async def ban(ctx,
-              member: discord.Member,
-              *,
-              reason="Sin ninguna razón en particular"):
-    await member.send(member.name +
-                      "Regresa a fornite fan de la CQ te baneamos porque: " +
-                      reason)
+async def ban(ctx, member: discord.Member, *, reason="Sin ninguna razón en particular"):
+    await member.send(member.name + "Regresa a fornite fan de la CQ te baneamos porque: " + reason)
     await member.ban(reason=reason)
 
 
@@ -365,13 +370,10 @@ async def bola8(ctx, *, question):
         'Mi respuesta es no', 'Mis fuentes me dicen que no',
         'Las perspectivas no son buenas', 'Muy dudoso'
     ]
-    _8ball_embed = discord.Embed(title='  ',
-                                 description=f"  ",
-                                 color=discord.Color.blue())
-    _8ball_embed.add_field(
-        name="Comando Azar | :8ball:",
-        value=
-        f"**Pregunta:** {question}\n**Respuesta:** {random.choice(response)}")
+
+    _8ball_embed = discord.Embed(title='  ', description=f"  ", color=discord.Color.blue())
+    _8ball_embed.add_field(name="Comando Azar | :8ball:",
+                           value=f"**Pregunta:** {question}\n**Respuesta:** {random.choice(response)}")
     await ctx.send(embed=_8ball_embed)
 
 
@@ -379,11 +381,8 @@ async def bola8(ctx, *, question):
 @bot.command(aliases=['toss'])
 async def moneda(ctx):
     response = ['Cara', 'Cruz']
-    moneda_embed = discord.Embed(title='  ',
-                                 description=f"  ",
-                                 color=discord.Color.blue())
-    moneda_embed.add_field(name="Comando Moneda | :coin:",
-                           value=f"{random.choice(response)}")
+    moneda_embed = discord.Embed(title='  ', description=f"  ", color=discord.Color.blue())
+    moneda_embed.add_field(name="Comando Moneda | :coin:", value=f"{random.choice(response)}")
     await ctx.send(embed=moneda_embed)
 
 
@@ -391,11 +390,8 @@ async def moneda(ctx):
 @bot.command(aliases=['roll6'])
 async def dado6(ctx):
     response = [':one:', ':two:', ':three:', ':four:', ':five:', ':six:']
-    dado_embed = discord.Embed(title='  ',
-                               description=f"  ",
-                               color=discord.Color.blue())
-    dado_embed.add_field(name="Comando Dado | :ice_cube:",
-                         value=f"{random.choice(response)}")
+    dado_embed = discord.Embed(title='  ', description=f"  ", color=discord.Color.blue())
+    dado_embed.add_field(name="Comando Dado | :ice_cube:", value=f"{random.choice(response)}")
     await ctx.send(embed=dado_embed)
 
 
@@ -413,11 +409,9 @@ async def dado(ctx):
         ':five:-:five:', ':five:-:six:', ':six:-:one:', ':six:-:two:',
         ':six:-:three:', ':six:-:four:', ':six:-:five:', ':six:-:six:'
     ]
-    dado_embed = discord.Embed(title='  ',
-                               description=f"  ",
-                               color=discord.Color.blue())
-    dado_embed.add_field(name="Comando Dado | :ice_cube:",
-                         value=f"{random.choice(response)}")
+
+    dado_embed = discord.Embed(title='  ', description=f"  ", color=discord.Color.blue())
+    dado_embed.add_field(name="Comando Dado | :ice_cube:", value=f"{random.choice(response)}")
     await ctx.send(embed=dado_embed)
 
 
@@ -428,13 +422,10 @@ async def calificar(ctx, *, question):
         '0/10', '1/10', '2/10', '3/10', '4/10', '5/10', '6/10', '7/10', '8/10',
         '9/10', '10/10', '9/11 bruh'
     ]
-    rate_embed = discord.Embed(title='  ',
-                               description=f"  ",
-                               color=discord.Color.blue())
-    rate_embed.add_field(
-        name="Comando Rate | :100:",
-        value=
-        f"**Pregunta:** {question}\n**Respuesta:** {random.choice(response)}")
+
+    rate_embed = discord.Embed(title='  ', description=f"  ", color=discord.Color.blue())
+    rate_embed.add_field(name="Comando Rate | :100:",
+                         value=f"**Pregunta:** {question}\n**Respuesta:** {random.choice(response)}")
     await ctx.send(embed=rate_embed)
 
 
@@ -450,11 +441,10 @@ async def golpe(ctx, *, member: discord.Member):
         'https://c.tenor.com/gFqmPEMWqEQAAAAC/the-simpsons-homer-simpson.gif',
         'https://c.tenor.com/XhdHGRof6WEAAAAC/anime-ataque-golpe-en-la-pared.gif'
     ]
-    punch_embed = discord.Embed(
-        title='  ',
-        description=
-        f"**{member}** te envía un madrazo el usuario **{ctx.author}** por retard",
-        color=discord.Color.blue())
+
+    punch_embed = discord.Embed(title='  ',
+                                description=f"**{member}** te envía un madrazo el usuario **{ctx.author}** por retard",
+                                color=discord.Color.blue())
     punch_embed.set_image(url=random.choice(listGifs))
     await ctx.send(embed=punch_embed)
 
@@ -476,10 +466,9 @@ async def apreton(ctx, *, member: discord.Member):
         'https://c.tenor.com/cwcnDr805qoAAAAC/handshake-black-ranger.gif',
         'https://c.tenor.com/sJhQNrxE-pMAAAAC/the-simpsons-homer-simpson.gif'
     ]
-    hand_embed = discord.Embed(
-        title='  ',
-        description=f"**{member}** hombre de cultura **{ctx.author}**",
-        color=discord.Color.blue())
+
+    hand_embed = discord.Embed(title='  ', description=f"**{member}** hombre de cultura **{ctx.author}**",
+                               color=discord.Color.blue())
     hand_embed.set_image(url=random.choice(listGifs))
     await ctx.send(embed=hand_embed)
 
@@ -487,13 +476,10 @@ async def apreton(ctx, *, member: discord.Member):
 # Información de usuario
 @bot.command(aliases=['user', 'info'])
 async def avers(ctx, member: discord.Member):
-    embed = discord.Embed(title=member.name,
-                          description=member.mention,
-                          color=discord.Color.green())
+    embed = discord.Embed(title=member.name, description=member.mention, color=discord.Color.green())
     embed.add_field(name="ID", value=member.id, inline=True)
     embed.set_thumbnail(url=member.avatar_url)
-    embed.set_footer(icon_url=ctx.author.avatar_url,
-                     text=f"Requested by {ctx.author.name}")
+    embed.set_footer(icon_url=ctx.author.avatar_url, text=f"Requested by {ctx.author.name}")
     await ctx.send(embed=embed)
 
 
@@ -545,8 +531,7 @@ async def ctm(ctx):
 @bot.command(aliases=['S', 's', 'Sumar'])
 async def sumar(ctx, var1, var2):
     response = int(var1) + int(var2)
-    statement = ("La suma de " + str(var1) + "+" + str(var2) +
-                 " es igual a: " + "{:,d}".format(int(response)))
+    statement = ("La suma de " + str(var1) + "+" + str(var2) + " es igual a: " + "{:,d}".format(int(response)))
     await ctx.send(statement)
 
 
@@ -554,8 +539,7 @@ async def sumar(ctx, var1, var2):
 @bot.command(aliases=['R', 'r', 'Restar'])
 async def restar(ctx, var1, var2):
     response = int(var1) - int(var2)
-    statement = ("La resta de " + str(var1) + "-" + str(var2) +
-                 " es igual a: " + "{:,d}".format(int(response)))
+    statement = ("La resta de " + str(var1) + "-" + str(var2) + " es igual a: " + "{:,d}".format(int(response)))
     await ctx.send(statement)
 
 
@@ -563,8 +547,8 @@ async def restar(ctx, var1, var2):
 @bot.command(aliases=['X', 'x', 'Multiplicar'])
 async def multiplicar(ctx, var1, var2):
     response = int(var1) * int(var2)
-    statement = ("La multiplicacion de " + str(var1) + "*" + str(var2) +
-                 " es igual a: " + "{:,d}".format(int(response)))
+    statement = (
+                "La multiplicacion de " + str(var1) + "*" + str(var2) + " es igual a: " + "{:,d}".format(int(response)))
     await ctx.send(statement)
 
 
@@ -572,8 +556,7 @@ async def multiplicar(ctx, var1, var2):
 @bot.command(aliases=['E', 'e', 'exponencial', 'Exponencial', 'Exp'])
 async def exp(ctx, var1, var2):
     response = int(var1) ** int(var2)
-    statement = ("El numero " + str(var1) + "^" + str(var2) + " es igual a: " +
-                 "{:,d}".format(int(response)))
+    statement = ("El numero " + str(var1) + "^" + str(var2) + " es igual a: " + "{:,d}".format(int(response)))
     await ctx.send(statement)
 
 
@@ -581,8 +564,7 @@ async def exp(ctx, var1, var2):
 @bot.command(aliases=['e2', 'E2'])
 async def cuadrado(ctx, var1):
     response = int(var1) ** int(2)
-    statement = ("El numero " + str(var1) + " al cuadrado es igual a: " +
-                 "{:,d}".format(int(response)))
+    statement = ("El numero " + str(var1) + " al cuadrado es igual a: " + "{:,d}".format(int(response)))
     await ctx.send(statement)
 
 
@@ -590,8 +572,7 @@ async def cuadrado(ctx, var1):
 @bot.command(aliases=['e3', 'E3'])
 async def cubo(ctx, var1):
     response = int(var1) ** int(3)
-    statement = ("El numero " + str(var1) + " al cubo es igual a: " +
-                 "{:,d}".format(int(response)))
+    statement = ("El numero " + str(var1) + " al cubo es igual a: " + "{:,d}".format(int(response)))
     await ctx.send(statement)
 
 
@@ -600,9 +581,8 @@ async def cubo(ctx, var1):
 async def division(ctx, var1, var2):
     div = int(var1) / int(var2)
     rest = int(var1) % int(var2)
-    statement = ("La división de " + str(var1) + "/" + str(var2) +
-                 " es igual a: " + "{:.2f}".format(int(div)) +
-                 "\nY tiene un residuo de: " + "{:.2f}".format(int(rest)))
+    statement = ("La división de " + str(var1) + "/" + str(var2) + " es igual a: " + "{:.2f}".format(
+        int(div)) + "\nY tiene un residuo de: " + "{:.2f}".format(int(rest)))
     await ctx.send(statement)
 
 
