@@ -3,6 +3,8 @@ import os
 import random
 import json
 import asyncio
+import datetime
+
 from discord.ext import commands, tasks
 from itertools import cycle
 from dotenv import load_dotenv
@@ -483,6 +485,18 @@ async def avers(ctx, member: discord.Member):
     embed.add_field(name="ID", value=member.id, inline=True)
     embed.set_thumbnail(url=member.avatar_url)
     embed.set_footer(icon_url=ctx.author.avatar_url, text=f"Requested by {ctx.author.name}")
+    await ctx.send(embed=embed)
+
+
+# Info del canal
+@bot.command(aliases=['discord'])
+async def canal(ctx):
+    embed = discord.Embed(title=f"{ctx.guild.name}", timestamp=datetime.datetime.utcnow(), color=discord.Color.blue())
+    embed.add_field(name="Server created at", value=f"{ctx.guild.created_at}")
+    embed.add_field(name="Server Region", value=f"{ctx.guild.region}")
+    embed.add_field(name="Server ID", value=f"{ctx.guild.id}")
+    embed.set_thumbnail(url=ctx.guild.icon_url)
+
     await ctx.send(embed=embed)
 
 
