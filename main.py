@@ -11,6 +11,7 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 
+# Obtiene el prefijo asignado
 def get_prefix(bot, message):
     with open('prefixes.json', 'r') as f:
         prefixes = json.load(f)
@@ -18,6 +19,7 @@ def get_prefix(bot, message):
         return prefixes[str(message.guild.id)]
 
 
+# Prefijo del bot
 bot = commands.Bot(command_prefix=get_prefix)
 
 f = open("rules.txt", "r")
@@ -25,6 +27,7 @@ rules = f.readlines()
 
 status = cycle(
     ['With ur mom', 'Gay el que lo lea', 'Sus', 'DB super es para pendejos'])
+
 filtered_words = ["Laxus", "laxus", "PKM", "pkm"]
 
 cartas = [
